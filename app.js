@@ -7,8 +7,9 @@ class Events{}
 class Store{}
 
 class API {
-    constructor(){
+    constructor(storeParam){
         this.sessionToken = null;
+        this.myStore = storeParam; 
     
     }
 
@@ -29,10 +30,21 @@ class API {
     _buildTokenUrl() {
         return new URL(this.BASE_API_URL + '/api_token.php');
     }
+    buildBaseUrl(amt = 10, query = {}) {
+        const url = new URL(BASE_API_URL + '/api.php');
+        const queryKeys = Object.keys(query);
+        url.searchParams.set('amount', amt);
+  
+        if (this.myStore.sessionToken) {
+            url.searchParams.set('token', this.myStore.sessionToken);
+        }
+  
+        queryKeys.forEach(key => url.searchParams.set(key, query[key]));
+        return url;        
+    }
 }
 
 API.prototype.BASE_API_URL = 'https://opentdb.com';  
-
 
 const BASE_API_URL = 'https://opentdb.com';  
 const TOP_LEVEL_COMPONENTS = [
@@ -64,18 +76,7 @@ const hideAll = function() {
     TOP_LEVEL_COMPONENTS.forEach(component => $(`.${component}`).hide());
 };
 
-const buildBaseUrl = function(amt = 10, query = {}) {
-    const url = new URL(BASE_API_URL + '/api.php');
-    const queryKeys = Object.keys(query);
-    url.searchParams.set('amount', amt);
 
-    if (store.sessionToken) {
-        url.searchParams.set('token', store.sessionToken);
-    }
-
-    queryKeys.forEach(key => url.searchParams.set(key, query[key]));
-    return url;
-};
 
 const fetchQuestions = function(amt, query, callback) {
     $.getJSON(buildBaseUrl(amt, query), callback, err => console.log(err.message));
@@ -262,7 +263,8 @@ const handleNextQuestion = function() {
 
 // On DOM Ready, run render() and add event listeners
 $(() => {
-    const api = new API();
+    const api = new API(store);
+    console.log(api.buildBaseUrl());
     // Run first render
     render(api);
   
