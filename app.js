@@ -42,6 +42,16 @@ class API {
         queryKeys.forEach(key => url.searchParams.set(key, query[key]));
         return url;        
     }
+    fetchQuestions(amt, query, callback) {
+        $.getJSON(url, query);
+        // $.getJSON(buildBaseUrl(amt, query), callback, err => console.log(err.message));
+    }
+    fetchAndSeedQuestions(amt, query, callback) {
+        fetchQuestions(amt, query, res => {
+            seedQuestions(res.results);
+            callback();
+        });
+    }
 }
 
 API.prototype.BASE_API_URL = 'https://opentdb.com';  
@@ -78,21 +88,14 @@ const hideAll = function() {
 
 
 
-const fetchQuestions = function(amt, query, callback) {
-    $.getJSON(buildBaseUrl(amt, query), callback, err => console.log(err.message));
-};
+
 
 const seedQuestions = function(questions) {
     QUESTIONS.length = 0;
     questions.forEach(q => QUESTIONS.push(createQuestion(q)));
 };
 
-const fetchAndSeedQuestions = function(amt, query, callback) {
-    fetchQuestions(amt, query, res => {
-        seedQuestions(res.results);
-        callback();
-    });
-};
+
 
 // Decorate API question object into our Quiz App question format
 const createQuestion = function(question) {
