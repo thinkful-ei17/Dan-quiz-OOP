@@ -142,20 +142,10 @@ const getQuestion = function(index) {
     return QUESTIONS[index];
 };
 
-// HTML generator functions
-// ========================
-const generateAnswerItemHtml = function(answer) {
-    return `
-    <li class="answer-item">
-      <input type="radio" name="answers" value="${answer}" />
-      <span class="answer-text">${answer}</span>
-    </li>
-  `;
-};
 
 const generateQuestionHtml = function(question) {
     const answers = question.answers
-        .map((answer, index) => generateAnswerItemHtml(answer, index))
+        .map((answer, index) => htmlgenerator.generateAnswerItemHtml(answer, index))
         .join('');
 
     return `
